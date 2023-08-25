@@ -6,6 +6,18 @@ freeradius  eap-peap dynamic vlan  + mac auth  example
 # describe
 > In this project, FreeRADIUS server have been designed for portability. Validation has been conducted only on Ubuntu 20.04, Ubuntu 22.04, and Kali Linux. There might be errors related to missing library packages in other environments.
 
+# deploy
+```
+scripts/deploy.sh
+
+#start in background
+scripts/start.sh
+
+# Start in debug mode
+scripts/start.sh c
+```
+
+
 # database
 >  create database and create a operator account
 ```
