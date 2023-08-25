@@ -1,10 +1,10 @@
 # freeradius-demo
-freeradius  eap-peap mariadb dynamic vlan example
+freeradius  eap-peap dynamic vlan  + mac auth  example
 
 
 
 # describe
-> In this project, both the database and FreeRADIUS have been designed for portability. Validation has been conducted only on Ubuntu 20.04, Ubuntu 22.04, and Kali Linux. There might be errors related to missing library packages in other environments.
+> In this project, FreeRADIUS server have been designed for portability. Validation has been conducted only on Ubuntu 20.04, Ubuntu 22.04, and Kali Linux. There might be errors related to missing library packages in other environments.
 
 # database
 >  create database and create a operator account
@@ -133,7 +133,7 @@ post-auth {
 .
 .
 .
-if("%{sql:SELECT COUNT(macauth.macaddr) FROM macauth,radcheck WHERE macauth.username=radcheck.username and macauth.username ='%{User-Name}'  and macauth.macaddr='%{Calling-Station-ID}'}" > 0){
+if("%{sql:SELECT COUNT(macaddr) FROM macauth  WHERE username ='%{User-Name}' and macaddr='%{Calling-Station-ID}'}" > 0){
                  ok
    }
    else{
@@ -144,5 +144,25 @@ if("%{sql:SELECT COUNT(macauth.macaddr) FROM macauth,radcheck WHERE macauth.user
 .
 }
 ```
-
+# Generate certificates
+```
+cd  raddb/certs
+sed -i 's/FR/CN/g' *.cnf
+sed -i 's/Radius/Sichuan/g' *.cnf
+sed -i 's/Somewhere/Chengdu/g' *.cnf
+sed -i 's#Example Inc.#MyOrg#g' *.cnf
+sed -i 's/Example Certificate Authority/radius.xxx.com/g' *.cnf 
+grep 60 -r *.cnf  
+sed -i 's/60/3650/g' *.cnf     #  Set the certificate validity period to 10 years.
+make
+```
+> Edit mods-available/eap to apply the certificates generated earlier.
+```
+#  Please modify to use absolute paths !
+private_key_file = .../certs/rsa/server.key  
+certificate_file = .../certs/server.pem    
+ca_file = .../certs/ca.pem                                                 
+ca_path = certs/rsa
+dh_file = ${certdir}/dh   
+```
 
